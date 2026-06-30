@@ -675,6 +675,54 @@ export type Database = {
           },
         ]
       }
+      plans: {
+        Row: {
+          created_at: string
+          currency: string
+          features: Json
+          id: string
+          is_active: boolean
+          monthly_amount: number
+          monthly_price_id: string
+          name: string
+          sort_order: number
+          stripe_product_id: string
+          tier: string
+          yearly_amount: number
+          yearly_price_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          features?: Json
+          id?: string
+          is_active?: boolean
+          monthly_amount: number
+          monthly_price_id: string
+          name: string
+          sort_order?: number
+          stripe_product_id: string
+          tier: string
+          yearly_amount: number
+          yearly_price_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          features?: Json
+          id?: string
+          is_active?: boolean
+          monthly_amount?: number
+          monthly_price_id?: string
+          name?: string
+          sort_order?: number
+          stripe_product_id?: string
+          tier?: string
+          yearly_amount?: number
+          yearly_price_id?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category_id: string | null
@@ -1755,6 +1803,7 @@ export type Database = {
         }[]
       }
       gettransactionid: { Args: never; Returns: unknown }
+      is_valid_plan_price: { Args: { p_price_id: string }; Returns: boolean }
       longtransactionsenabled: { Args: never; Returns: boolean }
       populate_geometry_columns:
         | { Args: { tbl_oid: unknown; use_typmod?: boolean }; Returns: number }
