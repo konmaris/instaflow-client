@@ -4,6 +4,8 @@ import { useRestaurant } from "../store/restaurant";
 import { useCart } from "../store/cart";
 import { usePublicTables } from "../hooks/useMenu";
 import { usePlaceOrder } from "../hooks/usePlaceOrder";
+import { useCreatePaymentIntent } from "../hooks/usePaymentIntent";
+import { CardPayment } from "../components/CardPayment";
 
 type Mode = "delivery" | "dine_in" | "pickup";
 
@@ -26,6 +28,13 @@ export function Checkout() {
   const [tableId, setTableId] = useState("");
   const [payment, setPayment] = useState<"cash" | "card">("cash");
   const [error, setError] = useState<string | null>(null);
+  // Card flow: once an order + PaymentIntent exist, switch to the card form.
+  const [pay, setPay] = useState<{
+    orderId: string;
+    clientSecret: string;
+    accountId: string;
+  } | null>(null);
+  const createIntent = useCreatePaymentIntent();
 
   if (!restaurant) return null;
   if (cart.items.length === 0)
@@ -50,8 +59,6 @@ export function Checkout() {
       return;
     }
     try {
-      // NOTE: card flow should create+confirm a Stripe PaymentIntent via the
-      // create-payment-intent Edge Function before/after this insert. Stubbed.
       const order = await place.mutateAsync({
         restaurantId: restaurant.id,
         type: mode,
@@ -63,12 +70,48 @@ export function Checkout() {
         tableId: mode === "dine_in" ? tableId || null : null,
         deliveryFee,
       });
+
+      if (payment === "card") {
+        // Create a PaymentIntent on the restaurant's connected account, then
+        // show the Stripe card form. Cart is cleared only after payment succeeds.
+        const intent = await createIntent.mutateAsync({ order_id: order.id });
+        setPay({
+          orderId: order.id,
+          clientSecret: intent.client_secret,
+          accountId: intent.account_id,
+        });
+        return;
+      }
+
       cart.clear();
       navigate(`/track/${order.id}`);
     } catch (err) {
       setError(String(err));
     }
   };
+
+  // Card payment step.
+  if (pay)
+    return (
+      <div className="mx-auto max-w-xl space-y-4 p-4">
+        <h1 className="text-xl font-bold">Pay by card</h1>
+        <div className="rounded-lg bg-white p-4 shadow-sm">
+          <CardPayment
+            clientSecret={pay.clientSecret}
+            accountId={pay.accountId}
+            amountLabel={`€${total.toFixed(2)}`}
+            brandColor={restaurant.brand_color}
+            onSuccess={() => {
+              cart.clear();
+              navigate(`/track/${pay.orderId}`);
+            }}
+          />
+        </div>
+        <p className="text-center text-xs text-gray-400">
+          Payments are processed securely by Stripe.
+        </p>
+      </div>
+    );
 
   return (
     <form onSubmit={submit} className="mx-auto max-w-xl space-y-4 p-4">
@@ -140,11 +183,15 @@ export function Checkout() {
 
       <button
         type="submit"
-        disabled={place.isPending}
+        disabled={place.isPending || createIntent.isPending}
         className="w-full rounded-xl py-3 font-semibold text-white disabled:opacity-50"
         style={{ backgroundColor: restaurant.brand_color }}
       >
-        {place.isPending ? "Placing order…" : `Place order · €${total.toFixed(2)}`}
+        {place.isPending || createIntent.isPending
+          ? "Please wait…"
+          : payment === "card"
+            ? `Continue to payment · €${total.toFixed(2)}`
+            : `Place order · €${total.toFixed(2)}`}
       </button>
     </form>
   );
