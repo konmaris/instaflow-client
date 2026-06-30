@@ -35,6 +35,14 @@ export function Track() {
   const isDelivery = order.type === "delivery";
   const showMap = isDelivery && restaurant?.live_tracking && rider;
 
+  // Rough ETA from the rider's live position to the delivery address. Straight-
+  // line (haversine) distance over an assumed ~20 km/h urban speed; good enough
+  // for a "~X min away" hint without a routing API.
+  const eta =
+    rider && order.delivery_lat != null && order.delivery_lng != null
+      ? estimateEta(rider.lat, rider.lng, order.delivery_lat, order.delivery_lng)
+      : null;
+
   return (
     <div className="mx-auto max-w-xl space-y-4 p-4">
       <Link to="/" className="text-sm text-gray-500">← Menu</Link>
@@ -71,6 +79,16 @@ export function Track() {
         )}
       </ol>
 
+      {showMap && eta && order.status === "out_for_delivery" && (
+        <div
+          className="rounded-lg p-3 text-center text-white shadow-sm"
+          style={{ backgroundColor: restaurant?.brand_color ?? "#111" }}
+        >
+          <span className="text-lg font-semibold">~{eta.minutes} min away</span>
+          <span className="ml-2 text-sm opacity-90">({eta.km.toFixed(1)} km)</span>
+        </div>
+      )}
+
       {showMap && rider && (
         <div className="overflow-hidden rounded-lg shadow-sm">
           <MapContainer
@@ -96,4 +114,18 @@ export function Track() {
       )}
     </div>
   );
+}
+
+/** Haversine distance + a coarse ETA at ~20 km/h, floored at 2 minutes. */
+function estimateEta(lat1: number, lng1: number, lat2: number, lng2: number) {
+  const R = 6371; // km
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  const km = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const minutes = Math.max(2, Math.round((km / 20) * 60));
+  return { km, minutes };
 }
