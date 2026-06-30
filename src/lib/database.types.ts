@@ -970,6 +970,8 @@ export type Database = {
       rider_current_location: {
         Row: {
           heading: number | null
+          lat: number | null
+          lng: number | null
           location: unknown
           order_id: string | null
           restaurant_id: string
@@ -979,6 +981,8 @@ export type Database = {
         }
         Insert: {
           heading?: number | null
+          lat?: number | null
+          lng?: number | null
           location: unknown
           order_id?: string | null
           restaurant_id: string
@@ -988,6 +992,8 @@ export type Database = {
         }
         Update: {
           heading?: number | null
+          lat?: number | null
+          lng?: number | null
           location?: unknown
           order_id?: string | null
           restaurant_id?: string
@@ -1024,6 +1030,8 @@ export type Database = {
           accuracy: number | null
           heading: number | null
           id: number
+          lat: number | null
+          lng: number | null
           location: unknown
           order_id: string | null
           recorded_at: string
@@ -1035,6 +1043,8 @@ export type Database = {
           accuracy?: number | null
           heading?: number | null
           id?: never
+          lat?: number | null
+          lng?: number | null
           location: unknown
           order_id?: string | null
           recorded_at?: string
@@ -1046,6 +1056,8 @@ export type Database = {
           accuracy?: number | null
           heading?: number | null
           id?: never
+          lat?: number | null
+          lng?: number | null
           location?: unknown
           order_id?: string | null
           recorded_at?: string

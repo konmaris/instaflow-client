@@ -7,18 +7,11 @@ export interface RiderPosition {
   updated_at: string;
 }
 
-/** Parse a PostGIS geography point returned as GeoJSON ({type, coordinates}). */
-function parsePoint(geo: unknown): RiderPosition | null {
-  if (!geo || typeof geo !== "object") return null;
-  const g = geo as { coordinates?: [number, number] };
-  if (!g.coordinates) return null;
-  const [lng, lat] = g.coordinates;
-  return { lat, lng, updated_at: new Date().toISOString() };
-}
-
 /**
  * Tracks an order's status and (for deliveries) the rider's live position.
  * Subscribes to Realtime changes on `orders` and `rider_current_location`.
+ * Positions use the generated lat/lng columns (PostGIS geography is returned as
+ * WKB hex over the API, which the browser can't read directly).
  */
 export function useOrderTracking(orderId: string | null) {
   const [order, setOrder] = useState<Order | null>(null);
@@ -40,11 +33,12 @@ export function useOrderTracking(orderId: string | null) {
       if (data?.assigned_rider_id) {
         const { data: loc } = await supabase
           .from("rider_current_location")
-          .select("location, updated_at")
+          .select("lat, lng, updated_at")
           .eq("rider_id", data.assigned_rider_id)
           .maybeSingle();
-        const p = parsePoint(loc?.location);
-        if (active && p) setRider({ ...p, updated_at: loc!.updated_at as string });
+        if (active && loc?.lat != null && loc?.lng != null) {
+          setRider({ lat: loc.lat, lng: loc.lng, updated_at: loc.updated_at as string });
+        }
       }
     };
     load();
@@ -69,9 +63,10 @@ export function useOrderTracking(orderId: string | null) {
           filter: `order_id=eq.${orderId}`,
         },
         (payload) => {
-          const row = payload.new as { location?: unknown; updated_at?: string };
-          const p = parsePoint(row.location);
-          if (p) setRider({ ...p, updated_at: row.updated_at ?? p.updated_at });
+          const row = payload.new as { lat?: number; lng?: number; updated_at?: string };
+          if (row.lat != null && row.lng != null) {
+            setRider({ lat: row.lat, lng: row.lng, updated_at: row.updated_at ?? new Date().toISOString() });
+          }
         },
       )
       .subscribe();
