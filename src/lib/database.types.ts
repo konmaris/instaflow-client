@@ -918,10 +918,16 @@ export type Database = {
           settings: Json
           slug: string
           stripe_account_id: string | null
+          stripe_billing_customer_id: string | null
           stripe_charges_enabled: boolean
           stripe_onboarded_at: string | null
           stripe_payouts_enabled: boolean
+          stripe_subscription_id: string | null
+          subscription_current_period_end: string | null
+          subscription_plan: string | null
+          subscription_status: string
           timezone: string
+          trial_ends_at: string | null
           updated_at: string
           vat_number: string | null
         }
@@ -941,10 +947,16 @@ export type Database = {
           settings?: Json
           slug: string
           stripe_account_id?: string | null
+          stripe_billing_customer_id?: string | null
           stripe_charges_enabled?: boolean
           stripe_onboarded_at?: string | null
           stripe_payouts_enabled?: boolean
+          stripe_subscription_id?: string | null
+          subscription_current_period_end?: string | null
+          subscription_plan?: string | null
+          subscription_status?: string
           timezone?: string
+          trial_ends_at?: string | null
           updated_at?: string
           vat_number?: string | null
         }
@@ -964,10 +976,16 @@ export type Database = {
           settings?: Json
           slug?: string
           stripe_account_id?: string | null
+          stripe_billing_customer_id?: string | null
           stripe_charges_enabled?: boolean
           stripe_onboarded_at?: string | null
           stripe_payouts_enabled?: boolean
+          stripe_subscription_id?: string | null
+          subscription_current_period_end?: string | null
+          subscription_plan?: string | null
+          subscription_status?: string
           timezone?: string
+          trial_ends_at?: string | null
           updated_at?: string
           vat_number?: string | null
         }
@@ -1731,6 +1749,7 @@ export type Database = {
           pickup_enabled: boolean
           slug: string
           stripe_charges_enabled: boolean
+          subscription_active: boolean
           tables_enabled: boolean
           timezone: string
         }[]
@@ -2359,6 +2378,10 @@ export type Database = {
       st_wrapx: {
         Args: { geom: unknown; move: number; wrap: number }
         Returns: unknown
+      }
+      subscription_active: {
+        Args: { p_restaurant_id: string }
+        Returns: boolean
       }
       unlockrows: { Args: { "": string }; Returns: number }
       updategeometrysrid: {
