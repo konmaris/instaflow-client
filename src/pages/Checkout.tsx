@@ -35,14 +35,18 @@ export function Checkout() {
       </div>
     );
 
+  // Card is only offered when the restaurant enabled online payments AND has
+  // finished Stripe onboarding (charges_enabled).
+  const canPayCard = restaurant.online_payments && restaurant.stripe_charges_enabled;
+
   const deliveryFee = mode === "delivery" ? 2.5 : 0;
   const total = cart.subtotal() + deliveryFee;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (payment === "card" && !restaurant.online_payments) {
-      setError("Card payments are not enabled for this restaurant.");
+    if (payment === "card" && !canPayCard) {
+      setError("Card payments are not available for this restaurant yet.");
       return;
     }
     try {
@@ -119,10 +123,10 @@ export function Checkout() {
         <button
           type="button"
           onClick={() => setPayment("card")}
-          disabled={!restaurant.online_payments}
+          disabled={!canPayCard}
           className={`flex-1 rounded-lg py-2 text-sm font-medium disabled:opacity-40 ${payment === "card" ? "bg-black text-white" : "bg-white"}`}
         >
-          Card {restaurant.online_payments ? "" : "(off)"}
+          Card {canPayCard ? "" : "(off)"}
         </button>
       </div>
 

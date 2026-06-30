@@ -912,6 +912,9 @@ export type Database = {
           settings: Json
           slug: string
           stripe_account_id: string | null
+          stripe_charges_enabled: boolean
+          stripe_onboarded_at: string | null
+          stripe_payouts_enabled: boolean
           timezone: string
           updated_at: string
           vat_number: string | null
@@ -932,6 +935,9 @@ export type Database = {
           settings?: Json
           slug: string
           stripe_account_id?: string | null
+          stripe_charges_enabled?: boolean
+          stripe_onboarded_at?: string | null
+          stripe_payouts_enabled?: boolean
           timezone?: string
           updated_at?: string
           vat_number?: string | null
@@ -952,6 +958,9 @@ export type Database = {
           settings?: Json
           slug?: string
           stripe_account_id?: string | null
+          stripe_charges_enabled?: boolean
+          stripe_onboarded_at?: string | null
+          stripe_payouts_enabled?: boolean
           timezone?: string
           updated_at?: string
           vat_number?: string | null
@@ -1703,6 +1712,7 @@ export type Database = {
           online_payments: boolean
           pickup_enabled: boolean
           slug: string
+          stripe_charges_enabled: boolean
           tables_enabled: boolean
           timezone: string
         }[]

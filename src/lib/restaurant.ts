@@ -13,6 +13,7 @@ export interface PublicRestaurant {
   tables_enabled: boolean;
   online_payments: boolean;
   live_tracking: boolean;
+  stripe_charges_enabled: boolean;
 }
 
 /**
