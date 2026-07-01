@@ -153,6 +153,153 @@ export type Database = {
           },
         ]
       }
+      fiscal_receipts: {
+        Row: {
+          aa: string | null
+          amount: number | null
+          auth_code: string | null
+          created_at: string
+          error: string | null
+          id: string
+          issued_at: string | null
+          kind: string
+          mark: string | null
+          order_id: string | null
+          payment_method_mark: string | null
+          provider: string
+          provider_payload: Json | null
+          qr_url: string | null
+          request_uid: string | null
+          restaurant_id: string
+          series: string | null
+          status: string
+          uid: string | null
+        }
+        Insert: {
+          aa?: string | null
+          amount?: number | null
+          auth_code?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          issued_at?: string | null
+          kind: string
+          mark?: string | null
+          order_id?: string | null
+          payment_method_mark?: string | null
+          provider?: string
+          provider_payload?: Json | null
+          qr_url?: string | null
+          request_uid?: string | null
+          restaurant_id: string
+          series?: string | null
+          status?: string
+          uid?: string | null
+        }
+        Update: {
+          aa?: string | null
+          amount?: number | null
+          auth_code?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          issued_at?: string | null
+          kind?: string
+          mark?: string | null
+          order_id?: string | null
+          payment_method_mark?: string | null
+          provider?: string
+          provider_payload?: Json | null
+          qr_url?: string | null
+          request_uid?: string | null
+          restaurant_id?: string
+          series?: string | null
+          status?: string
+          uid?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fiscal_receipts_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fiscal_receipts_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fiscal_signatures: {
+        Row: {
+          amount: number | null
+          b_signature: string | null
+          created_at: string
+          h_signature: string | null
+          id: string
+          kind: string
+          nsp_code: string | null
+          order_id: string | null
+          restaurant_id: string
+          signature_message: string | null
+          status: string
+          temp_uid: string | null
+          tid: string | null
+          uid: string | null
+        }
+        Insert: {
+          amount?: number | null
+          b_signature?: string | null
+          created_at?: string
+          h_signature?: string | null
+          id?: string
+          kind: string
+          nsp_code?: string | null
+          order_id?: string | null
+          restaurant_id: string
+          signature_message?: string | null
+          status?: string
+          temp_uid?: string | null
+          tid?: string | null
+          uid?: string | null
+        }
+        Update: {
+          amount?: number | null
+          b_signature?: string | null
+          created_at?: string
+          h_signature?: string | null
+          id?: string
+          kind?: string
+          nsp_code?: string | null
+          order_id?: string | null
+          restaurant_id?: string
+          signature_message?: string | null
+          status?: string
+          temp_uid?: string | null
+          tid?: string | null
+          uid?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fiscal_signatures_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fiscal_signatures_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ledger_entries: {
         Row: {
           amount: number
@@ -446,6 +593,8 @@ export type Database = {
           discount: number
           eta: string | null
           external_ref: string | null
+          fiscal_mark: string | null
+          fiscal_status: string
           id: string
           notes: string | null
           order_number: number
@@ -489,6 +638,8 @@ export type Database = {
           discount?: number
           eta?: string | null
           external_ref?: string | null
+          fiscal_mark?: string | null
+          fiscal_status?: string
           id?: string
           notes?: string | null
           order_number: number
@@ -532,6 +683,8 @@ export type Database = {
           discount?: number
           eta?: string | null
           external_ref?: string | null
+          fiscal_mark?: string | null
+          fiscal_status?: string
           id?: string
           notes?: string | null
           order_number?: number
@@ -897,6 +1050,59 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "restaurant_addons_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: true
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      restaurant_fiscal_config: {
+        Row: {
+          branch: number
+          bratnet_base_url: string | null
+          bratnet_password: string | null
+          bratnet_username: string | null
+          default_terminal_id: string | null
+          enabled: boolean
+          invoice_series: string | null
+          nsp_code: string | null
+          provider: string
+          restaurant_id: string
+          updated_at: string
+          vat_number: string | null
+        }
+        Insert: {
+          branch?: number
+          bratnet_base_url?: string | null
+          bratnet_password?: string | null
+          bratnet_username?: string | null
+          default_terminal_id?: string | null
+          enabled?: boolean
+          invoice_series?: string | null
+          nsp_code?: string | null
+          provider?: string
+          restaurant_id: string
+          updated_at?: string
+          vat_number?: string | null
+        }
+        Update: {
+          branch?: number
+          bratnet_base_url?: string | null
+          bratnet_password?: string | null
+          bratnet_username?: string | null
+          default_terminal_id?: string | null
+          enabled?: boolean
+          invoice_series?: string | null
+          nsp_code?: string | null
+          provider?: string
+          restaurant_id?: string
+          updated_at?: string
+          vat_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_fiscal_config_restaurant_id_fkey"
             columns: ["restaurant_id"]
             isOneToOne: true
             referencedRelation: "restaurants"
