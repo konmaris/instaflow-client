@@ -1,9 +1,18 @@
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { ReceiptText } from "lucide-react";
 import { useOrderTracking } from "../hooks/useOrderTracking";
 import { useRestaurant } from "../store/restaurant";
+import { supabase } from "../lib/supabase";
+
+interface FiscalReceipt {
+  mark: string | null;
+  uid: string | null;
+  qr_url: string | null;
+}
 
 const STEPS = [
   { key: "pending", label: "Received" },
@@ -28,6 +37,21 @@ export function Track() {
   const { orderId } = useParams();
   const { restaurant } = useRestaurant();
   const { order, rider } = useOrderTracking(orderId ?? null);
+  const [receipt, setReceipt] = useState<FiscalReceipt | null>(null);
+
+  // Fetch the legal (myDATA) receipt once the order has been fiscalised.
+  useEffect(() => {
+    if (!orderId || order?.fiscal_status !== "issued") return;
+    supabase
+      .from("fiscal_receipts")
+      .select("mark, uid, qr_url")
+      .eq("order_id", orderId)
+      .eq("status", "issued")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => setReceipt(data ?? null));
+  }, [orderId, order?.fiscal_status]);
 
   if (!order) return <p className="p-8 text-center text-gray-500">Loading order…</p>;
 
@@ -53,6 +77,30 @@ export function Track() {
           · €{Number(order.total).toFixed(2)} · {order.payment_method}
         </p>
       </div>
+
+      {/* Legal (myDATA) receipt */}
+      {order.fiscal_status === "issued" && (
+        <div className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-sm">
+          <ReceiptText className="h-6 w-6 flex-shrink-0" style={{ color: restaurant?.brand_color }} />
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-semibold">Legal receipt issued</div>
+            {(receipt?.mark || order.fiscal_mark) && (
+              <div className="truncate text-xs text-gray-500">MARK: {receipt?.mark ?? order.fiscal_mark}</div>
+            )}
+          </div>
+          {receipt?.qr_url && (
+            <a
+              href={receipt.qr_url}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-lg px-3 py-1.5 text-sm font-medium text-white"
+              style={{ backgroundColor: restaurant?.brand_color ?? "#111" }}
+            >
+              View
+            </a>
+          )}
+        </div>
+      )}
 
       {/* Status timeline */}
       <ol className="rounded-2xl bg-white p-4 shadow-sm">
