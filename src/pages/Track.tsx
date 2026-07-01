@@ -46,7 +46,7 @@ export function Track() {
   return (
     <div className="mx-auto max-w-xl space-y-4 p-4">
       <Link to="/" className="text-sm text-gray-500">← Menu</Link>
-      <div className="rounded-lg bg-white p-4 shadow-sm">
+      <div className="rounded-2xl bg-white p-4 shadow-sm">
         <h1 className="text-xl font-bold">Order #{order.order_number}</h1>
         <p className="text-sm text-gray-500">
           {order.type === "delivery" ? "Delivery" : order.type === "dine_in" ? "Dine-in" : "Pickup"}{" "}
@@ -55,7 +55,7 @@ export function Track() {
       </div>
 
       {/* Status timeline */}
-      <ol className="rounded-lg bg-white p-4 shadow-sm">
+      <ol className="rounded-2xl bg-white p-4 shadow-sm">
         {STEPS.filter((s) => isDelivery || !["out_for_delivery", "delivered"].includes(s.key)).map(
           (s, i) => {
             const done = currentIdx >= STEPS.findIndex((x) => x.key === s.key);
@@ -81,7 +81,7 @@ export function Track() {
 
       {showMap && eta && order.status === "out_for_delivery" && (
         <div
-          className="rounded-lg p-3 text-center text-white shadow-sm"
+          className="rounded-2xl p-3 text-center text-white shadow-sm"
           style={{ backgroundColor: restaurant?.brand_color ?? "#111" }}
         >
           <span className="text-lg font-semibold">~{eta.minutes} min away</span>
@@ -90,7 +90,7 @@ export function Track() {
       )}
 
       {showMap && rider && (
-        <div className="overflow-hidden rounded-lg shadow-sm">
+        <div className="overflow-hidden rounded-2xl shadow-sm">
           <MapContainer
             center={[rider.lat, rider.lng]}
             zoom={15}
@@ -108,7 +108,7 @@ export function Track() {
         </div>
       )}
       {isDelivery && restaurant?.live_tracking && !rider && (
-        <p className="rounded-lg bg-white p-3 text-center text-sm text-gray-500 shadow-sm">
+        <p className="rounded-2xl bg-white p-3 text-center text-sm text-gray-500 shadow-sm">
           Live location appears once a rider picks up your order.
         </p>
       )}

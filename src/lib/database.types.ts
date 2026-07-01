@@ -434,11 +434,15 @@ export type Database = {
           customer_name: string | null
           customer_phone: string | null
           delivery_address: string | null
+          delivery_area: string | null
+          delivery_city: string | null
           delivery_fee: number
+          delivery_floor: string | null
           delivery_lat: number | null
           delivery_lng: number | null
           delivery_location: unknown
           delivery_notes: string | null
+          delivery_postal_code: string | null
           discount: number
           eta: string | null
           external_ref: string | null
@@ -473,11 +477,15 @@ export type Database = {
           customer_name?: string | null
           customer_phone?: string | null
           delivery_address?: string | null
+          delivery_area?: string | null
+          delivery_city?: string | null
           delivery_fee?: number
+          delivery_floor?: string | null
           delivery_lat?: number | null
           delivery_lng?: number | null
           delivery_location?: unknown
           delivery_notes?: string | null
+          delivery_postal_code?: string | null
           discount?: number
           eta?: string | null
           external_ref?: string | null
@@ -512,11 +520,15 @@ export type Database = {
           customer_name?: string | null
           customer_phone?: string | null
           delivery_address?: string | null
+          delivery_area?: string | null
+          delivery_city?: string | null
           delivery_fee?: number
+          delivery_floor?: string | null
           delivery_lat?: number | null
           delivery_lng?: number | null
           delivery_location?: unknown
           delivery_notes?: string | null
+          delivery_postal_code?: string | null
           discount?: number
           eta?: string | null
           external_ref?: string | null

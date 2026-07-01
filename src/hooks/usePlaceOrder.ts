@@ -10,6 +10,12 @@ export interface PlaceOrderInput {
   customerName: string;
   customerPhone: string;
   deliveryAddress?: string;
+  deliveryArea?: string;
+  deliveryCity?: string;
+  deliveryPostalCode?: string;
+  deliveryFloor?: string;
+  deliveryLat?: number | null;
+  deliveryLng?: number | null;
   tableId?: string | null;
   deliveryFee?: number;
   notes?: string;
@@ -39,6 +45,16 @@ export function usePlaceOrder() {
           customer_phone: input.customerPhone,
           table_id: input.tableId ?? null,
           delivery_address: input.deliveryAddress || null,
+          delivery_area: input.deliveryArea || null,
+          delivery_city: input.deliveryCity || null,
+          delivery_postal_code: input.deliveryPostalCode || null,
+          delivery_floor: input.deliveryFloor || null,
+          // PostGIS geography as EWKT (lng lat). delivery_lat/lng generated cols
+          // derive from this and power the rider map + customer ETA.
+          delivery_location:
+            input.deliveryLat != null && input.deliveryLng != null
+              ? `SRID=4326;POINT(${input.deliveryLng} ${input.deliveryLat})`
+              : null,
           delivery_fee: input.deliveryFee ?? 0,
           notes: input.notes || null,
           placed_at: new Date().toISOString(),
